@@ -7,9 +7,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
 // PWD Orca1234
 @TeleOp(name="2P_Tele")
 public class Tele2 extends LinearOpMode {
+    OuttakeStatus status;
     DcMotorEx leftSlide;
     DcMotorEx rightSlide;
     DcMotor frontLeftWheel;
@@ -28,16 +30,16 @@ public class Tele2 extends LinearOpMode {
         rightSlide.setVelocity(ARM_FULL_SPEED_IN_COUNTS);
     }
     public void straight(double power) {
-        frontLeftWheel.setPower(power*0.8*0.9);
-        frontRightWheel.setPower(power*0.82*0.9);
-        backLeftWheel.setPower(power*0.8*0.9);
-        backRightWheel.setPower(power*0.82*0.9);
+        frontLeftWheel.setPower(power*0.8*0.8);
+        frontRightWheel.setPower(power*0.82*0.8);
+        backLeftWheel.setPower(power*0.8*0.8);
+        backRightWheel.setPower(power*0.82*0.8);
     }
     public void turn(double power) { // positive is CW turn, negative is CCW
-        frontLeftWheel.setPower(-power*0.8*0.9);
-        frontRightWheel.setPower(power*0.8*0.9);
-        backLeftWheel.setPower(-power*0.8*0.9);
-        backRightWheel.setPower(power*0.8*0.9);
+        frontLeftWheel.setPower(-power*0.8*0.8);
+        frontRightWheel.setPower(power*0.8*0.8);
+        backLeftWheel.setPower(-power*0.8*0.8);
+        backRightWheel.setPower(power*0.8*0.8);
     }
     public void strafe(double power) { // positive is right, negative is left
         frontLeftWheel.setPower(power*0.8*0.9);
@@ -46,16 +48,27 @@ public class Tele2 extends LinearOpMode {
         backRightWheel.setPower(-power*0.8*0.9);
     }
     public void boxIn() {
-        box.setPosition(0.6);
+        box.setPosition(0.625);
+        status = OuttakeStatus.OUTAKE_RECEIVE;
     }
-    public void boxOut() {
+
+    public void adjustBox() {
         if (leftSlide.getCurrentPosition() > 450) {
-//            box.setPosition(1);
+            box.setPosition(1);
 //            sleep(500);
-            box.setPosition(0.335);
+            status = OuttakeStatus.OUTTAKE_ADJUST;
         }
 
     }
+    public void boxOut() {
+        if (leftSlide.getCurrentPosition() > 450) {
+            box.setPosition(0.3);
+            status = OuttakeStatus.OUTTAKE_DROP;
+        }
+    }
+//    public void boxUp() {
+//
+//    }
     public static final double ARM_GEAR_RATIO = 13.7;
     public static final int ARM_MOTOR_SPEED_IN_RPM = 435;
     public static final double PULLEY_DIAMETER_IN_MM = 35.65;
@@ -63,9 +76,11 @@ public class Tele2 extends LinearOpMode {
     public static final int ARM_COUNTS_PER_MILLIMETER = (int) ((COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO) / (PULLEY_DIAMETER_IN_MM * Math.PI));
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPEED_IN_RPM / 60;
     boolean intakeOn = true;
+
     // LEFT MAX 2000
     @Override
     public void runOpMode() throws InterruptedException {
+        status = OuttakeStatus.OUTAKE_RECEIVE;
         leftSlide = (DcMotorEx) hardwareMap.dcMotor.get("leftSlide");
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide = (DcMotorEx) hardwareMap.dcMotor.get("rightSlide");
@@ -86,7 +101,7 @@ public class Tele2 extends LinearOpMode {
         box = hardwareMap.servo.get("box");
         in = hardwareMap.servo.get("in");
 //        box.setDirection(Servo.Direction.REVERSE);
-        in.setPosition(1);
+        in.setPosition(0.935);
         waitForStart();
         boxIn();
         while (opModeIsActive()) {
@@ -104,16 +119,20 @@ public class Tele2 extends LinearOpMode {
             }
             int targetPosition = currentPosition;
             targetPosition += raiseStep;
-            if (targetPosition > 1800) {
-                targetPosition = 1800;
+            if (targetPosition > 2100) {
+                targetPosition = 2100;
             }
-//            else if (targetPosition < 0) {
-//                targetPosition = 0;
-
+            else if (targetPosition < 10) {
+                targetPosition = 10;
+            }
+            if (status == OuttakeStatus.OUTTAKE_ADJUST && Math.abs(box.getPosition()-1) < 0.005) {
+                boxOut();
+            }
             if (gamepad2.x) {
                 boxIn();
             } else if (gamepad2.a) {
-                boxOut();
+                adjustBox();
+
             }
             raiseSlider(targetPosition);
             if (intakeOn) {
@@ -132,12 +151,12 @@ public class Tele2 extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            if (Math.abs(y) > 0.1 && Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(rx)) {
+            if (Math.abs(rx) > 0.1 && Math.abs(rx) > Math.abs(x) && Math.abs(rx) > Math.abs(y)) {
+                turn(rx);
+            } else if (Math.abs(y) > 0.1 && Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(rx)) {
                 straight(y);
             } else if (Math.abs(x) > 0.1 && Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(rx)) {
                 strafe(x);
-            } else if (Math.abs(rx) > 0.1 && Math.abs(rx) > Math.abs(x) && Math.abs(rx) > Math.abs(y)) {
-                turn(rx);
             } else {
                 straight(0);
             }
