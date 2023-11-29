@@ -19,12 +19,14 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -61,7 +63,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.7069701280227596017069701280228;
+    public static double LATERAL_MULTIPLIER = 1.0112359550561797752808988764045;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -79,6 +81,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
+    protected DcMotorEx leftSlide;
+    protected DcMotorEx rightSlide;
+    protected DcMotor intake;
+    protected Servo box;
+    protected Servo intakeRaise;
+    protected CRServo rollers;
 
     private List<Integer> lastEncPositions = new ArrayList<>();
     private List<Integer> lastEncVels = new ArrayList<>();
@@ -103,6 +111,15 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear = hardwareMap.get(DcMotorEx.class, "backLeft");
         rightRear = hardwareMap.get(DcMotorEx.class, "backRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "frontRight");
+        leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide = (DcMotorEx) hardwareMap.dcMotor.get("rightSlide");
+        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake = hardwareMap.dcMotor.get("intake");
+        box = hardwareMap.servo.get("box");
+        rollers = hardwareMap.crservo.get("rollers");
+        intakeRaise = hardwareMap.servo.get("in");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -288,7 +305,35 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear.setPower(v2);
         rightFront.setPower(v3);
     }
-
+    public void raiseSlider(int targetPos) {
+        leftSlide.setTargetPosition(targetPos);
+        rightSlide.setTargetPosition(targetPos);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setPower(1.0);
+        rightSlide.setPower(1.0);
+    }
+    public void intake() {
+        rollers.setPower(1);
+        intake.setPower(-1);
+    }
+    public void stopIntake() {
+        rollers.setPower(0);
+        intake.setPower(0);
+    }
+    public void outtake() {
+        rollers.setPower(-1);
+        intake.setPower(0.3);
+    }
+    public void boxIn() {
+        box.setPosition(0.625);
+    }
+    public void boxOut() {
+        box.setPosition(0.3);
+    }
+    public void raiseIntake(double position) {
+        intakeRaise.setPosition(position);
+    }
     @Override
     public double getRawExternalHeading() {
         return 0;

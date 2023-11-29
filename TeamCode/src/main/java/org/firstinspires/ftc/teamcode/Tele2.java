@@ -22,6 +22,7 @@ public class Tele2 extends LinearOpMode {
     Servo in;
     CRServo rollers;
     Servo plane;
+    int launches;
     public void raiseSlider(int position) {
         leftSlide.setTargetPosition(position);
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -82,6 +83,7 @@ public class Tele2 extends LinearOpMode {
     // LEFT MAX 2000
     @Override
     public void runOpMode() throws InterruptedException {
+        launches = 0;
         boolean hasLaunched = false;
         status = OuttakeStatus.OUTAKE_RECEIVE;
         leftSlide = (DcMotorEx) hardwareMap.dcMotor.get("leftSlide");
@@ -169,6 +171,9 @@ public class Tele2 extends LinearOpMode {
             }
 
             if (gamepad2.b) {
+                launches += 1;
+            }
+            if (launches >= 50) {
                 hasLaunched = true;
             }
             if (hasLaunched) {
@@ -179,6 +184,7 @@ public class Tele2 extends LinearOpMode {
             telemetry.addData("leftPosition", leftSlide.getCurrentPosition());
             telemetry.addData("rightPosition", rightSlide.getCurrentPosition());
             telemetry.addData("intakeOn", intakeOn);
+            telemetry.addData("launches", launches);
             telemetry.update();
         }
     }
