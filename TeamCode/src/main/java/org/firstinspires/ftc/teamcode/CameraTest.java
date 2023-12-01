@@ -29,8 +29,16 @@ public class CameraTest extends LinearOpMode {
 
         sleep(5000);
         portal.saveNextFrameRaw(String.format(Locale.US, "CameraFrameCapture"));
-        waitForStart();
 
+        waitForStart();
+        while (opModeIsActive()) {
+            double[] values = bluePropThreshold.getAverage();
+            telemetry.addData("leftH", values[0]);
+            telemetry.addData("leftS", values[1]);
+            telemetry.addData("rightH", values[2]);
+            telemetry.addData("rightS", values[3]);
+            telemetry.update();
+        }
     }
 }
 

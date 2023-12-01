@@ -38,10 +38,10 @@ public class Tele2 extends LinearOpMode {
         backRightWheel.setPower(power*0.82*0.8);
     }
     public void turn(double power) { // positive is CW turn, negative is CCW
-        frontLeftWheel.setPower(-power*0.8*0.8);
-        frontRightWheel.setPower(power*0.8*0.8);
-        backLeftWheel.setPower(-power*0.8*0.8);
-        backRightWheel.setPower(power*0.8*0.8);
+        frontLeftWheel.setPower(-power*0.8*0.66);
+        frontRightWheel.setPower(power*0.8*0.66);
+        backLeftWheel.setPower(-power*0.8*0.66);
+        backRightWheel.setPower(power*0.8*0.66);
     }
     public void strafe(double power) { // positive is right, negative is left
         frontLeftWheel.setPower(-power*0.8*0.9);
