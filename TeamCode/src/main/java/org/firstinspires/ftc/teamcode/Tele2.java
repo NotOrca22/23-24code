@@ -65,7 +65,7 @@ public class Tele2 extends LinearOpMode {
     }
     public void boxOut() {
         if (leftSlide.getCurrentPosition() > 450) {
-            box.setPosition(0.3);
+            box.setPosition(0.335);
             status = OuttakeStatus.OUTTAKE_DROP;
         }
     }
