@@ -16,31 +16,31 @@ import org.firstinspires.ftc.vision.VisionPortal;
 
 import java.util.Locale;
 
-@Autonomous(name="RedNear")
-public class RedRightAuto extends LinearOpMode {
+@Autonomous(name="BlueFarCycle")
+public class BlueRightExtraPixel extends LinearOpMode {
     private VisionPortal portal;
-    private RedPropSearchThreshold redPropSearchThreshold;
+    private BluePropSearchThreshold bluePropSearchThreshold;
     private boolean captured = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        redPropSearchThreshold = new RedPropSearchThreshold();
+        bluePropSearchThreshold = new BluePropSearchThreshold();
 
         portal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
                 .setCamera(BuiltinCameraDirection.BACK)
-                .addProcessor(redPropSearchThreshold)
+                .addProcessor(bluePropSearchThreshold)
                 .build();
 
 
 
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
-                .back(18)
-                .strafeLeft(11.5)
-                .back(4)
+        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
+                .back(32.25)
+                .turn(Math.toRadians(90))
+//                                        .back(4)
                 .addTemporalMarker(() -> {
                     drive.outtake();
                 })
@@ -48,33 +48,58 @@ public class RedRightAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     drive.stopIntake();
                 })
-                .forward(3)
-                .turn(Math.toRadians(90))
+                .forward(6)
+                .strafeLeft(18.5)
+                .turn(Math.toRadians(-180))
+//                .back(23)
+//                .strafeLeft(11)
                 .addTemporalMarker(() -> {
-                    drive.raiseSlider(950);
+                    drive.raiseIntake(0.636);
+                })
+                .waitSeconds(0.15)
+                .addTemporalMarker(() -> {
+                    drive.intake();
+                })
+                .waitSeconds(0.025)
+                .back(18.5)
+                .waitSeconds(0.55)
+                .addTemporalMarker(() -> {
+                    drive.stopIntake();
+                })
+                .waitSeconds(0.025)
+//                .turn(Math.toRadians(-90))
+                .forward(15)
+                .strafeRight(2)
+                .forward(84)
+
+                .addTemporalMarker(() -> {
+                    drive.raiseSlider(1050);
                 })
                 .waitSeconds(0.5)
-                .forward(8)
+                .strafeLeft(30)
+                .addTemporalMarker(() -> {
+                    drive.adjustBox();
+                })
+                .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
                     drive.boxOut();
                 })
                 .waitSeconds(0.4)
-                .forward(21.5)
+                .forward(12)
                 .waitSeconds(0.2)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1300);
                 })
                 .waitSeconds(0.3)
-                .back(2)
                 .addTemporalMarker(() -> {
                     drive.boxIn();
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(0.3)
+                .back(2.5)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(0);
                 })
-                .waitSeconds(0.5)
-                .strafeRight(15)
+                .strafeRight(23)
                 .build();
         TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d())
                 .back(27.5)
@@ -85,42 +110,58 @@ public class RedRightAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     drive.stopIntake();
                 })
-                .forward(5)
-                .turn(Math.toRadians(90))
+                .forward(4)
+                .strafeLeft(16)
+                .turn(Math.toRadians(-90))
+                .strafeRight(29)
                 .addTemporalMarker(() -> {
-                    drive.raiseSlider(950);
+                    drive.raiseIntake(0.636);
                 })
-                .waitSeconds(0.4)
-                .forward(20)
-                .strafeLeft(3)
+                .waitSeconds(0.15)
+                .addTemporalMarker(() -> {
+                    drive.intake();
+                })
+                .waitSeconds(0.05)
+                .back(7)
+                .waitSeconds(0.55)
+                .addTemporalMarker(() -> {
+                    drive.stopIntake();
+                })
+                .waitSeconds(0.025)
+                .forward(15)
+                .strafeRight(2)
+                .forward(84)
+                .addTemporalMarker(() -> {
+                    drive.raiseSlider(1040);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     drive.boxOut();
                 })
                 .waitSeconds(0.3)
-                .forward(21)
-                .waitSeconds(0.25)
+                .strafeLeft(25)
+                .forward(10.75)
+                .waitSeconds(0.2)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1300);
                 })
-                .waitSeconds(0.25)
-                .back(5)
+                .waitSeconds(0.3)
                 .addTemporalMarker(() -> {
                     drive.boxIn();
                 })
                 .waitSeconds(0.3)
+                .back(4)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(0);
                 })
-                .waitSeconds(0.5)
-                .strafeRight(23)
-//                                                                                                                                                                        .forward(10)
+                .strafeRight(18)
                 .build();
 
+
 //
-        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
-                .back(28)
-                .turn(Math.toRadians(90))
-//                                        .back(4)
+        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
+                .back(32.25)
+                .turn(Math.toRadians(-90))
                 .addTemporalMarker(() -> {
                     drive.outtake();
                 })
@@ -128,38 +169,55 @@ public class RedRightAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     drive.stopIntake();
                 })
-                .forward(30)
-//                                                .turn(Math.toRadians(-90))
-//                                                        .forward(30)
+                .forward(1)
+                .strafeRight(18)
+//                .turn(Math.toRadians(-90))
+//                .strafeLeft(9)
                 .addTemporalMarker(() -> {
-                    drive.raiseSlider(950);
+                    drive.raiseIntake(0.636);
+                })
+                .waitSeconds(0.15)
+                .addTemporalMarker(() -> {
+                    drive.intake();
+                })
+                .waitSeconds(0.025)
+                .back(26.5)
+                .waitSeconds(0.55)
+                .addTemporalMarker(() -> {
+                    drive.stopIntake();
+                })
+                .waitSeconds(0.025)
+                .forward(15)
+                .strafeRight(2)
+                .forward(85.5)
+                .addTemporalMarker(() -> {
+                    drive.raiseSlider(1040);
                 })
                 .waitSeconds(0.5)
-                .strafeLeft(5)
                 .addTemporalMarker(() -> {
                     drive.boxOut();
                 })
-                .waitSeconds(0.5)
-                .forward(10.25)
-                .waitSeconds(0.25)
+                .waitSeconds(0.3)
+                .strafeLeft(19)
+                .forward(10.75)
+                .waitSeconds(0.2)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1300);
                 })
                 .waitSeconds(0.3)
-                .back(2)
                 .addTemporalMarker(() -> {
                     drive.boxIn();
                 })
-                .waitSeconds(0.6)
+                .waitSeconds(0.3)
+                .back(4)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(0);
                 })
-                .waitSeconds(0.2)
-                .strafeRight(30.5)
+                .strafeRight(15)
                 .build();
 
         waitForStart();
-        String position = redPropSearchThreshold.getPropPosition();
+        String position = bluePropSearchThreshold.getPropPosition();
         telemetry.addData("Prop Position", position);
         telemetry.update();
         if(isStopRequested()) return;

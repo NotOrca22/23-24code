@@ -50,7 +50,7 @@ public class BluePropSearchThreshold implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        if(true) {
+        if (true) {
             double redAvg = Core.mean(frame).val[0];
             if(redAvg > 0) {
                 captured = Boolean.TRUE;

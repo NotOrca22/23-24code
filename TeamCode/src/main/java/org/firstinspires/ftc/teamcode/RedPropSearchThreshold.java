@@ -61,7 +61,7 @@ public class RedPropSearchThreshold implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        if(!captured) {
+        if(true) {
             double redAvg = Core.mean(frame).val[0];
             if(redAvg > 0) {
                 captured = Boolean.TRUE;

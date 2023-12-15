@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 // PWD Orca1234
-@TeleOp(name="1P_Tele")
-public class Tele1 extends LinearOpMode {
+@TeleOp(name="LowerSlide")
+public class SlideLower extends LinearOpMode {
     OuttakeStatus status;
     DcMotorEx leftSlide;
     DcMotorEx rightSlide;
@@ -21,7 +21,6 @@ public class Tele1 extends LinearOpMode {
     Servo box;
     Servo in;
     CRServo rollers;
-    Servo plane;
     public void raiseSlider(int position) {
         leftSlide.setTargetPosition(position);
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -43,9 +42,9 @@ public class Tele1 extends LinearOpMode {
         backRightWheel.setPower(power*0.8*0.8);
     }
     public void strafe(double power) { // positive is right, negative is left
-        frontLeftWheel.setPower(-power*0.8*0.9);
+        frontLeftWheel.setPower(power*0.8*0.9);
         frontRightWheel.setPower(power*0.82*0.9);
-        backLeftWheel.setPower(power*0.8*0.9);
+        backLeftWheel.setPower(-power*0.8*0.9);
         backRightWheel.setPower(-power*0.8*0.9);
     }
     public void boxIn() {
@@ -55,7 +54,6 @@ public class Tele1 extends LinearOpMode {
 
     public void adjustBox() {
         if (leftSlide.getCurrentPosition() > 450) {
-            status = OuttakeStatus.ADJUSTING;
             box.setPosition(1);
 //            sleep(500);
             status = OuttakeStatus.OUTTAKE_ADJUST;
@@ -82,7 +80,6 @@ public class Tele1 extends LinearOpMode {
     // LEFT MAX 2000
     @Override
     public void runOpMode() throws InterruptedException {
-        boolean hasLaunched = false;
         status = OuttakeStatus.OUTAKE_RECEIVE;
         leftSlide = (DcMotorEx) hardwareMap.dcMotor.get("leftSlide");
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -91,7 +88,7 @@ public class Tele1 extends LinearOpMode {
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         DcMotor intake = hardwareMap.dcMotor.get("intake");
         frontLeftWheel = hardwareMap.dcMotor.get("frontLeft");
-//        frontLeftWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftWheel.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightWheel = hardwareMap.dcMotor.get("frontRight");
         frontRightWheel.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftWheel = hardwareMap.dcMotor.get("backLeft");
@@ -104,80 +101,31 @@ public class Tele1 extends LinearOpMode {
         rollers = hardwareMap.crservo.get("rollers");
         box = hardwareMap.servo.get("box");
         in = hardwareMap.servo.get("in");
-        plane = hardwareMap.servo.get("plane");
 //        box.setDirection(Servo.Direction.REVERSE);
-        in.setPosition(0.66);
+        in.setPosition(0.935);
         waitForStart();
         boxIn();
         while (opModeIsActive()) {
-            in.setPosition(0.66); // 0.935 for 1 pixel, 0.865 for 2 pixels, 0.78 for 2 3 pixels, 0.71 for 4 pixels, 0.66 for 5 pixels
-            leftSlide.setTargetPositionTolerance(100);
-            rightSlide.setTargetPositionTolerance(100);
-            int currentPosition = leftSlide.getCurrentPosition();
-            int raiseStep = 0;
-            if(gamepad1.dpad_down) {
-                raiseStep = -120;
-            } else if (gamepad1.dpad_up) {
-                raiseStep = 120;
+            if (gamepad1.y) {
+                frontLeftWheel.setPower(1);
             } else {
-                raiseStep = 0;
-            }
-            int targetPosition = currentPosition;
-            targetPosition += raiseStep;
-            if (targetPosition > 2100) {
-                targetPosition = 2100;
-            }
-            else if (targetPosition < 10) {
-                targetPosition = 10;
-            }
-            if (status == OuttakeStatus.OUTTAKE_ADJUST && Math.abs(box.getPosition()-1) < 0.005) {
-                boxOut();
+                frontLeftWheel.setPower(0);
             }
             if (gamepad1.x) {
-                boxIn();
-            } else if (gamepad1.a) {
-                adjustBox();
-
-            }
-            raiseSlider(targetPosition);
-            if (intakeOn) {
-                rollers.setPower(1);
-                intake.setPower(-1);
+                backLeftWheel.setPower(1);
             } else {
-                rollers.setPower(0);
-                intake.setPower(0);
+                backLeftWheel.setPower(0);
             }
-            if (gamepad1.left_bumper) {
-                intakeOn = false;
-            } else if (gamepad1.right_bumper) {
-                intakeOn = true;
-            }
-            double y = gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-            if (Math.abs(rx) > 0.1 && Math.abs(rx) > Math.abs(x) && Math.abs(rx) > Math.abs(y)) {
-                turn(rx);
-            } else if (Math.abs(y) > 0.1 && Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(rx)) {
-                straight(y);
-            } else if (Math.abs(x) > 0.1 && Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(rx)) {
-                strafe(x);
-            } else {
-                straight(0);
-            }
-
             if (gamepad1.b) {
-                hasLaunched = true;
-            }
-            if (hasLaunched) {
-                plane.setPosition(0.4);
+                frontRightWheel.setPower(1);
             } else {
-                plane.setPosition(0.5);
+                frontRightWheel.setPower(0);
             }
-            telemetry.addData("leftPosition", leftSlide.getCurrentPosition());
-            telemetry.addData("rightPosition", rightSlide.getCurrentPosition());
-            telemetry.addData("intakeOn", intakeOn);
-            telemetry.update();
+            if (gamepad1.a) {
+                backRightWheel.setPower(1);
+            } else {
+                backRightWheel.setPower(0);
+            }
         }
     }
 }

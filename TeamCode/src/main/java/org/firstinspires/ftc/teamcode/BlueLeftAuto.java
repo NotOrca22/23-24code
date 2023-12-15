@@ -59,7 +59,7 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.boxOut();
                 })
                 .waitSeconds(0.4)
-                .forward(20)
+                .forward(21)
                 .waitSeconds(0.2)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1200);
@@ -86,18 +86,18 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.stopIntake();
                 })
                 .forward(5)
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1000);
                 })
                 .waitSeconds(0.4)
                 .forward(20)
-                .strafeLeft(4)
+                .strafeRight(4)
                 .addTemporalMarker(() -> {
                     drive.boxOut();
                 })
                 .waitSeconds(0.3)
-                .forward(20)
+                .forward(21)
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1200);
@@ -112,7 +112,7 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.5)
-                .strafeLeft(23)
+                .strafeLeft(22)
 //                                                                                                                                                                        .forward(10)
                 .build();
 
@@ -140,7 +140,7 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.boxOut();
                 })
                 .waitSeconds(0.5)
-                .forward(10.25)
+                .forward(11.5)
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1200);

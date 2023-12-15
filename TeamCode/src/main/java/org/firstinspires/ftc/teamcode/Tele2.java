@@ -44,13 +44,13 @@ public class Tele2 extends LinearOpMode {
         backRightWheel.setPower(power*0.8*0.66);
     }
     public void strafe(double power) { // positive is right, negative is left
-        frontLeftWheel.setPower(-power*0.8*0.9);
+        frontLeftWheel.setPower(-power*0.8*0.9*0.975);
         frontRightWheel.setPower(power*0.82*0.9);
-        backLeftWheel.setPower(power*0.8*0.9);
+        backLeftWheel.setPower(power*0.8*0.9*0.975);
         backRightWheel.setPower(-power*0.8*0.9);
     }
     public void boxIn() {
-        box.setPosition(0.625);
+        box.setPosition(0.666);
         status = OuttakeStatus.OUTAKE_RECEIVE;
     }
 
@@ -65,7 +65,7 @@ public class Tele2 extends LinearOpMode {
     }
     public void boxOut() {
         if (leftSlide.getCurrentPosition() > 450) {
-            box.setPosition(0.335);
+            box.setPosition(0.315);
             status = OuttakeStatus.OUTTAKE_DROP;
         }
     }
@@ -78,7 +78,7 @@ public class Tele2 extends LinearOpMode {
     public static final double COUNTS_PER_ENCODER_REV = 28;
     public static final int ARM_COUNTS_PER_MILLIMETER = (int) ((COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO) / (PULLEY_DIAMETER_IN_MM * Math.PI));
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPEED_IN_RPM / 60;
-    boolean intakeOn = true;
+    boolean intakeOn = false;
 
     // LEFT MAX 2000
     @Override
@@ -99,6 +99,7 @@ public class Tele2 extends LinearOpMode {
         backLeftWheel = hardwareMap.dcMotor.get("backLeft");
         backRightWheel = hardwareMap.dcMotor.get("backRight");
         backRightWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
 //        frontLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        frontRightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        backLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -106,13 +107,43 @@ public class Tele2 extends LinearOpMode {
         rollers = hardwareMap.crservo.get("rollers");
         box = hardwareMap.servo.get("box");
         in = hardwareMap.servo.get("in");
+//        in.setDirection(Servo.Direction.REVERSE);
         plane = hardwareMap.servo.get("plane");
 //        box.setDirection(Servo.Direction.REVERSE);
-        in.setPosition(0.935);
+        int inPosition = 1;
+//        in.setPosition(0.935);
         waitForStart();
         boxIn();
         while (opModeIsActive()) {
-            in.setPosition(1);
+            switch(inPosition) {
+                case 1:
+                    in.setPosition(0.945);
+                    break;
+                case 2:
+                    in.setPosition(0.865);
+                    break;
+                case 3:
+                    in.setPosition(0.78);
+                    break;
+                case 4:
+                    in.setPosition(0.71);
+                    break;
+                case 5:
+                    in.setPosition(0.645);
+                    break;
+            }
+            if (gamepad1.x) {
+                inPosition = 1;
+            } else if (gamepad1.a) {
+                inPosition = 2;
+            } else if (gamepad1.b) {
+                inPosition = 3;
+            } else if (gamepad1.y) {
+                inPosition = 4;
+            } else if (gamepad1.right_bumper) {
+                inPosition = 5;
+            }
+//            in.setPosition(1);
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);
             int currentPosition = leftSlide.getCurrentPosition();
@@ -146,7 +177,7 @@ public class Tele2 extends LinearOpMode {
             raiseSlider(targetPosition);
             if (intakeOn) {
                 rollers.setPower(1);
-                intake.setPower(-1);
+                intake.setPower(-0.8);
             } else {
                 rollers.setPower(0);
                 intake.setPower(0);
@@ -180,6 +211,10 @@ public class Tele2 extends LinearOpMode {
                 plane.setPosition(0.4);
             } else {
                 plane.setPosition(0.5);
+            }
+            if (gamepad2.left_trigger > 0) {
+                intake.setPower(gamepad2.left_trigger);
+                rollers.setPower(-gamepad2.left_trigger);
             }
             telemetry.addData("leftPosition", leftSlide.getCurrentPosition());
             telemetry.addData("rightPosition", rightSlide.getCurrentPosition());
