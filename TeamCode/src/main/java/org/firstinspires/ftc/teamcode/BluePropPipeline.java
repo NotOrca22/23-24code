@@ -94,16 +94,16 @@ public class BluePropPipeline extends OpenCvPipeline {
     private int captureCounter = 0;
     private File captureDirectory = AppUtil.ROBOT_DATA_DIR;
     private void saveBitmap(Bitmap bitmap) {
-        File file = new File(captureDirectory, String.format(Locale.getDefault(), "webcam-frame-%d.jpg", captureCounter++));
-        try {
-            try (FileOutputStream outputStream = new FileOutputStream(file)) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-//                telemetry.log().add("captured %s", file.getName());
-            }
-        } catch (IOException e) {
-//            RobotLog.ee(TAG, e, "exception in saveBitmap()");
-//            error("exception saving %s", file.getName());
-        }
+//        File file = new File(captureDirectory, String.format(Locale.getDefault(), "webcam-frame-%d.jpg", captureCounter++));
+//        try {
+//            try (FileOutputStream outputStream = new FileOutputStream(file)) {
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+////                telemetry.log().add("captured %s", file.getName());
+//            }
+//        } catch (IOException e) {
+////            RobotLog.ee(TAG, e, "exception in saveBitmap()");
+////            error("exception saving %s", file.getName());
+//        }
 
     }
     /*

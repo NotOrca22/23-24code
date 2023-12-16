@@ -347,7 +347,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         box.setPosition(0.666);
     }
     public void boxOut() {
-        box.setPosition(0.315);
+        box.setPosition(0.32);
     }
     public void raiseIntake(double position) {
         intakeRaise.setPosition(position);

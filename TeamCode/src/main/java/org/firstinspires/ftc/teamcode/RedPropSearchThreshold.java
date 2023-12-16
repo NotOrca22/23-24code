@@ -67,9 +67,9 @@ public class RedPropSearchThreshold implements VisionProcessor {
                 captured = Boolean.TRUE;
                 Imgproc.cvtColor(frame, saved, Imgproc.COLOR_BGR2RGB);
 
-                File file = new File(captureDirectory, String.format(Locale.getDefault(), "webcam-frame-%d.jpg", System.currentTimeMillis()));
+//                File file = new File(captureDirectory, String.format(Locale.getDefault(), "webcam-frame-%d.jpg", System.currentTimeMillis()));
 
-                Imgcodecs.imwrite(file.getAbsolutePath(), saved);
+//                Imgcodecs.imwrite(file.getAbsolutePath(), saved);
                 Imgproc.cvtColor(frame, testMat, Imgproc.COLOR_RGB2HSV);
 
 

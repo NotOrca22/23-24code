@@ -106,26 +106,22 @@ public class SlideLower extends LinearOpMode {
         waitForStart();
         boxIn();
         while (opModeIsActive()) {
-            if (gamepad1.y) {
-                frontLeftWheel.setPower(1);
+            leftSlide.setTargetPositionTolerance(100);
+            rightSlide.setTargetPositionTolerance(100);
+            int currentPosition = leftSlide.getCurrentPosition();
+            int raiseStep = 0;
+            if(gamepad2.dpad_down) {
+                raiseStep = -80;
+            } else if (gamepad2.dpad_up) {
+                raiseStep = 80;
+            } else if (gamepad2.y) {
+                raiseStep = -180;
             } else {
-                frontLeftWheel.setPower(0);
+                raiseStep = 0;
             }
-            if (gamepad1.x) {
-                backLeftWheel.setPower(1);
-            } else {
-                backLeftWheel.setPower(0);
-            }
-            if (gamepad1.b) {
-                frontRightWheel.setPower(1);
-            } else {
-                frontRightWheel.setPower(0);
-            }
-            if (gamepad1.a) {
-                backRightWheel.setPower(1);
-            } else {
-                backRightWheel.setPower(0);
-            }
+            int targetPosition = currentPosition;
+            targetPosition += raiseStep;
+            raiseSlider(targetPosition);
         }
     }
 }
