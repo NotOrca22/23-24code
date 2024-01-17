@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -10,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 // PWD Orca1234
-@Disabled
+@TeleOp(name="1P_Tele")
 public class Tele1 extends LinearOpMode {
     OuttakeStatus status;
     DcMotorEx leftSlide;
@@ -23,6 +22,7 @@ public class Tele1 extends LinearOpMode {
     Servo in;
     CRServo rollers;
     Servo plane;
+    int launches;
     public void raiseSlider(int position) {
         leftSlide.setTargetPosition(position);
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -38,19 +38,19 @@ public class Tele1 extends LinearOpMode {
         backRightWheel.setPower(power*0.82*0.8);
     }
     public void turn(double power) { // positive is CW turn, negative is CCW
-        frontLeftWheel.setPower(-power*0.8*0.8);
-        frontRightWheel.setPower(power*0.8*0.8);
-        backLeftWheel.setPower(-power*0.8*0.8);
-        backRightWheel.setPower(power*0.8*0.8);
+        frontLeftWheel.setPower(-power*0.8*0.66);
+        frontRightWheel.setPower(power*0.8*0.66);
+        backLeftWheel.setPower(-power*0.8*0.66);
+        backRightWheel.setPower(power*0.8*0.66);
     }
     public void strafe(double power) { // positive is right, negative is left
-        frontLeftWheel.setPower(-power*0.8*0.9);
+        frontLeftWheel.setPower(-power*0.8*0.9*0.975);
         frontRightWheel.setPower(power*0.82*0.9);
-        backLeftWheel.setPower(power*0.8*0.9);
+        backLeftWheel.setPower(power*0.8*0.9*0.975);
         backRightWheel.setPower(-power*0.8*0.9);
     }
     public void boxIn() {
-        box.setPosition(0.625);
+        box.setPosition(0.666);
         status = OuttakeStatus.OUTAKE_RECEIVE;
     }
 
@@ -65,7 +65,7 @@ public class Tele1 extends LinearOpMode {
     }
     public void boxOut() {
         if (leftSlide.getCurrentPosition() > 450) {
-            box.setPosition(0.3);
+            box.setPosition(0.34);
             status = OuttakeStatus.OUTTAKE_DROP;
         }
     }
@@ -78,11 +78,12 @@ public class Tele1 extends LinearOpMode {
     public static final double COUNTS_PER_ENCODER_REV = 28;
     public static final int ARM_COUNTS_PER_MILLIMETER = (int) ((COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO) / (PULLEY_DIAMETER_IN_MM * Math.PI));
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPEED_IN_RPM / 60;
-    boolean intakeOn = true;
+    boolean intakeOn = false;
 
     // LEFT MAX 2000
     @Override
     public void runOpMode() throws InterruptedException {
+        launches = 0;
         boolean hasLaunched = false;
         status = OuttakeStatus.OUTAKE_RECEIVE;
         leftSlide = (DcMotorEx) hardwareMap.dcMotor.get("leftSlide");
@@ -98,6 +99,7 @@ public class Tele1 extends LinearOpMode {
         backLeftWheel = hardwareMap.dcMotor.get("backLeft");
         backRightWheel = hardwareMap.dcMotor.get("backRight");
         backRightWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
 //        frontLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        frontRightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        backLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -105,13 +107,44 @@ public class Tele1 extends LinearOpMode {
         rollers = hardwareMap.crservo.get("rollers");
         box = hardwareMap.servo.get("box");
         in = hardwareMap.servo.get("in");
+//        in.setDirection(Servo.Direction.REVERSE);
         plane = hardwareMap.servo.get("plane");
 //        box.setDirection(Servo.Direction.REVERSE);
-        in.setPosition(0.66);
+        int inPosition = 1;
+//        in.setPosition(0.935);
         waitForStart();
         boxIn();
         while (opModeIsActive()) {
-            in.setPosition(0.66); // 0.935 for 1 pixel, 0.865 for 2 pixels, 0.78 for 2 3 pixels, 0.71 for 4 pixels, 0.66 for 5 pixels
+            switch(inPosition) {
+                case 1:
+                    in.setPosition(0.945);
+                    break;
+                case 2:
+                    in.setPosition(0.865);
+                    break;
+                case 3:
+                    in.setPosition(0.78);
+                    break;
+                case 4:
+                    in.setPosition(0.71);
+                    break;
+                case 5:
+                    in.setPosition(0.645);
+                    break;
+            }
+            if (gamepad1.x) {
+                inPosition = 1;
+//            } else if (gamepad1.a) {
+//                inPosition = 2;
+//            } else if (gamepad1.b) {
+//                inPosition = 3;
+//            } else if (gamepad1.y) {
+//                inPosition = 4;
+//            } else if (gamepad1.right_bumper) {
+//                inPosition = 5;
+//            }
+            }
+//            in.setPosition(1);
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);
             int currentPosition = leftSlide.getCurrentPosition();
@@ -120,6 +153,8 @@ public class Tele1 extends LinearOpMode {
                 raiseStep = -120;
             } else if (gamepad1.dpad_up) {
                 raiseStep = 120;
+            } else if (gamepad1.y) {
+                raiseStep = -180;
             } else {
                 raiseStep = 0;
             }
@@ -143,7 +178,7 @@ public class Tele1 extends LinearOpMode {
             raiseSlider(targetPosition);
             if (intakeOn) {
                 rollers.setPower(1);
-                intake.setPower(-1);
+                intake.setPower(-0.8);
             } else {
                 rollers.setPower(0);
                 intake.setPower(0);
@@ -168,6 +203,9 @@ public class Tele1 extends LinearOpMode {
             }
 
             if (gamepad1.b) {
+                launches += 1;
+            }
+            if (launches >= 50) {
                 hasLaunched = true;
             }
             if (hasLaunched) {
@@ -175,9 +213,14 @@ public class Tele1 extends LinearOpMode {
             } else {
                 plane.setPosition(0.5);
             }
+            if (gamepad1.left_trigger > 0) {
+                intake.setPower(gamepad1.left_trigger);
+                rollers.setPower(-gamepad1.left_trigger);
+            }
             telemetry.addData("leftPosition", leftSlide.getCurrentPosition());
             telemetry.addData("rightPosition", rightSlide.getCurrentPosition());
             telemetry.addData("intakeOn", intakeOn);
+            telemetry.addData("launches", launches);
             telemetry.update();
         }
     }

@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 // PWD Orca1234
-@TeleOp(name="2P_Tele")
-public class Tele2 extends LinearOpMode {
+@TeleOp(name="1P_TeleNew")
+public class Tele1NewDrive extends LinearOpMode {
     OuttakeStatus status;
     DcMotorEx leftSlide;
     DcMotorEx rightSlide;
@@ -49,6 +49,13 @@ public class Tele2 extends LinearOpMode {
         backLeftWheel.setPower(power*0.8*0.9*0.975);
         backRightWheel.setPower(-power*0.8*0.9);
     }
+    public void drive(double y, double x, double rx) {
+        x *= -1;
+        frontLeftWheel.setPower((y + x + rx)*0.6*0.95);
+        backLeftWheel.setPower((y - x + rx)*0.6*0.95);
+        frontRightWheel.setPower((y - x - rx)*0.6);
+        backRightWheel.setPower((y + x - rx)*0.6);
+    }
     public void boxIn() {
         box.setPosition(0.666);
         status = OuttakeStatus.OUTAKE_RECEIVE;
@@ -69,7 +76,7 @@ public class Tele2 extends LinearOpMode {
             status = OuttakeStatus.OUTTAKE_DROP;
         }
     }
-//    public void boxUp() {
+    //    public void boxUp() {
 //
 //    }
     public static final double ARM_GEAR_RATIO = 13.7;
@@ -99,6 +106,10 @@ public class Tele2 extends LinearOpMode {
         backLeftWheel = hardwareMap.dcMotor.get("backLeft");
         backRightWheel = hardwareMap.dcMotor.get("backRight");
         backRightWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 //        frontLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        frontRightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -134,26 +145,27 @@ public class Tele2 extends LinearOpMode {
             }
             if (gamepad1.x) {
                 inPosition = 1;
-            } else if (gamepad1.a) {
-                inPosition = 2;
-            } else if (gamepad1.b) {
-                inPosition = 3;
-            } else if (gamepad1.y) {
-                inPosition = 4;
-            } else if (gamepad1.right_bumper) {
-                inPosition = 5;
+//            } else if (gamepad1.a) {
+//                inPosition = 2;
+//            } else if (gamepad1.b) {
+//                inPosition = 3;
+//            } else if (gamepad1.y) {
+//                inPosition = 4;
+//            } else if (gamepad1.right_bumper) {
+//                inPosition = 5;
+//            }
             }
 //            in.setPosition(1);
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);
             int currentPosition = leftSlide.getCurrentPosition();
             int raiseStep = 0;
-            if(gamepad2.dpad_down) {
+            if(gamepad1.dpad_down) {
                 raiseStep = -120;
-            } else if (gamepad2.dpad_up) {
+            } else if (gamepad1.dpad_up) {
                 raiseStep = 120;
-            } else if (gamepad2.y) {
-               raiseStep = -180;
+            } else if (gamepad1.y) {
+                raiseStep = -180;
             } else {
                 raiseStep = 0;
             }
@@ -168,9 +180,9 @@ public class Tele2 extends LinearOpMode {
             if (status == OuttakeStatus.OUTTAKE_ADJUST && Math.abs(box.getPosition()-1) < 0.005) {
                 boxOut();
             }
-            if (gamepad2.x) {
+            if (gamepad1.x) {
                 boxIn();
-            } else if (gamepad2.a) {
+            } else if (gamepad1.a) {
                 adjustBox();
 
             }
@@ -182,26 +194,18 @@ public class Tele2 extends LinearOpMode {
                 rollers.setPower(0);
                 intake.setPower(0);
             }
-            if (gamepad2.left_bumper) {
+            if (gamepad1.left_bumper) {
                 intakeOn = false;
-            } else if (gamepad2.right_bumper) {
+            } else if (gamepad1.right_bumper) {
                 intakeOn = true;
             }
             double y = gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            if (Math.abs(rx) > 0.1 && Math.abs(rx) > Math.abs(x) && Math.abs(rx) > Math.abs(y)) {
-                turn(rx);
-            } else if (Math.abs(y) > 0.1 && Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(rx)) {
-                straight(y);
-            } else if (Math.abs(x) > 0.1 && Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(rx)) {
-                strafe(x);
-            } else {
-                straight(0);
-            }
+            drive(y, x, rx);
 
-            if (gamepad2.b) {
+            if (gamepad1.b) {
                 launches += 1;
             }
             if (launches >= 50) {
@@ -212,9 +216,9 @@ public class Tele2 extends LinearOpMode {
             } else {
                 plane.setPosition(0.5);
             }
-            if (gamepad2.left_trigger > 0) {
-                intake.setPower(gamepad2.left_trigger);
-                rollers.setPower(-gamepad2.left_trigger);
+            if (gamepad1.left_trigger > 0) {
+                intake.setPower(gamepad1.left_trigger);
+                rollers.setPower(-gamepad1.left_trigger);
             }
             telemetry.addData("leftPosition", leftSlide.getCurrentPosition());
             telemetry.addData("rightPosition", rightSlide.getCurrentPosition());
