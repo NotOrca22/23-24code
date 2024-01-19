@@ -17,8 +17,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 
 import java.util.Locale;
 
-@Autonomous(name="Blue Near")
-public class BlueLeftAuto extends LinearOpMode {
+@Autonomous(name="Blue Far")
+public class BlueRightAuto extends LinearOpMode {
     private VisionPortal portal;
     private BluePropSearchThreshold bluePropSearchThreshold;
     private boolean captured = false;
@@ -42,9 +42,9 @@ public class BlueLeftAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     drive.raiseIntake(0.74);
                 })
-                .back(4)
-                .strafeRight(10.5)
-                .back(20)
+                .back(28.5)
+                .turn(Math.toRadians(90))
+                .back(0.5)
                 .addTemporalMarker(() -> {
                     drive.outtake();
                 })
@@ -52,40 +52,7 @@ public class BlueLeftAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     drive.stoptake();
                 })
-                .forward(6)
-                .addTemporalMarker(() -> {
-                    drive.boxOut();
-                })
-                .waitSeconds(0.15)
 
-
-                .turn(Math.toRadians(-90))
-                .forward(7.5)
-                .addTemporalMarker(() -> {
-                    drive.raiseSlider(800);
-                })
-                .waitSeconds(0.4)
-                .strafeRight(3)
-                .forward(18)
-                .waitSeconds(0.1)
-                .forward(4.5)
-                .waitSeconds(0.35)
-                .addTemporalMarker(() -> {
-                    drive.raiseSlider(1150);
-                })
-                .waitSeconds(0.15)
-                .addTemporalMarker(() -> {
-                    drive.boxIn();
-                })
-                .waitSeconds(0.1)
-                .back(3)
-                .addTemporalMarker(() -> {
-                    drive.raiseSlider(0);
-                })
-                .waitSeconds(0.25)
-                .strafeLeft(17.75)
-                .forward(8)
-                .waitSeconds(1)
                 .build();
         TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d())
                 .back(27.5)

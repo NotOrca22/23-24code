@@ -1,15 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="Tele2")
-public class Tele2 extends LinearOpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+
+@TeleOp(name="IMU test")
+public class IMUTest extends LinearOpMode {
     DcMotor intake;
     Servo box;
     DcMotor rollers;
@@ -21,6 +26,7 @@ public class Tele2 extends LinearOpMode {
     DcMotor backRight;
     Servo intakeRaise;
     Servo plane;
+    IMU imu;
     int intakePosition = 1;
     public static final double ARM_GEAR_RATIO = 13.7;
     public static final int ARM_MOTOR_SPEED_IN_RPM = 435;
@@ -40,7 +46,7 @@ public class Tele2 extends LinearOpMode {
     }
     boolean boxIn = true;
     int launches = 0;
-    boolean intakeOn = false;
+
     // 0.82 for 2 pixels
     @Override
     public void runOpMode() throws InterruptedException {
@@ -55,6 +61,10 @@ public class Tele2 extends LinearOpMode {
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         backLeft = hardwareMap.dcMotor.get("backLeft");
         plane = hardwareMap.servo.get("plane");
+        imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
+        imu.initialize(parameters);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -68,19 +78,20 @@ public class Tele2 extends LinearOpMode {
         plane.setPosition(0.47);
 //        box.setPosition(1);
         int slideHeight = 0;
+        box.setPosition(1);
         waitForStart();
         while (opModeIsActive()) {
             if (boxIn) {
                 box.setPosition(0.885);
             } else {
-                box.setPosition(0.0545);
+                box.setPosition(0.05);
             }
-            if (gamepad2.a) {
+            if (gamepad1.a) {
                 boxIn = false;
-            } else if (gamepad2.x) {
+            } else if (gamepad1.x) {
                 boxIn = true;
             }
-            if (gamepad2.b) {
+            if (gamepad1.b) {
                 launches += 1;
             }
             if (launches >= 50) {
@@ -88,42 +99,22 @@ public class Tele2 extends LinearOpMode {
             } else {
                 plane.setPosition(0.47);
             }
-            if (gamepad2.right_bumper) {
-                intakeOn = true;
-            } else if (gamepad2.left_bumper) {
-                intakeOn = false;
-            }
-            if (intakeOn) {
-                rollers.setPower(1);
-                intake.setPower(1);
-            } else {
-                rollers.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
-                intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
-            }
+            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+//            box.setPosition(0.8125);
+            rollers.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
             if (intakePosition == 1) {
                 intakeRaise.setPosition(0.74);
-            } else if (intakePosition == 2) {
-                intakeRaise.setPosition(0.78);
-            } else if (intakePosition == 3) {
-                intakeRaise.setPosition(0.825);
-            }
-            if (gamepad1.x) {
-                intakePosition = 1;
-            } else if (gamepad1.a) {
-                intakePosition = 2;
-            } else if (gamepad1.b) {
-                intakePosition = 3;
             }
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);
 //            int currentPosition = leftSlide.getCurrentPosition();
             int raiseStep = 0;
-            if(gamepad2.dpad_down) {
+            if(gamepad1.dpad_down) {
                 slideHeight += -15;
-            } else if (gamepad2.dpad_up) {
+            } else if (gamepad1.dpad_up) {
                 slideHeight += 15;
-            } else if (gamepad2.y) {
-                slideHeight += -35;
+            } else if (gamepad1.y) {
+                slideHeight += -40;
             } else {
                 slideHeight += 0;
             }
@@ -139,11 +130,12 @@ public class Tele2 extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            frontLeft.setPower((y + x + rx)*0.85);
-            backLeft.setPower((y - x + rx)*0.85);
-            frontRight.setPower((y - x - rx)*0.85);
-            backRight.setPower((y + x - rx)*0.85);
+            frontLeft.setPower(y + x + rx);
+            backLeft.setPower(y - x + rx);
+            frontRight.setPower(y - x - rx);
+            backRight.setPower(y + x - rx);
             telemetry.addData("launches", launches);
+            telemetry.addData("heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.update();
         }
     }

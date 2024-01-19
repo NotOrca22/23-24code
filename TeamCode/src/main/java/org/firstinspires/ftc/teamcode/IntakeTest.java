@@ -68,6 +68,7 @@ public class IntakeTest extends LinearOpMode {
         plane.setPosition(0.47);
 //        box.setPosition(1);
         int slideHeight = 0;
+        box.setPosition(1);
         waitForStart();
         while (opModeIsActive()) {
             if (boxIn) {

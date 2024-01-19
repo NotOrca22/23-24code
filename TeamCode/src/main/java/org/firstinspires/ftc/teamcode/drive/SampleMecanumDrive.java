@@ -189,6 +189,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         rollers.setPower(-0.4);
         intake.setPower(-0.4);
     }
+    public void intake() {
+        rollers.setPower(1);
+        intake.setPower(1);
+    }
     public void raiseIntake(double position) {
         intakeRaise.setPosition(position);
     }
