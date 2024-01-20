@@ -98,11 +98,6 @@ public class SampleMecanumDrive extends MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
-        imu.initialize(parameters);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "frontLeft");
         leftRear = hardwareMap.get(DcMotorEx.class, "backLeft");
@@ -145,7 +140,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -192,15 +187,19 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void raiseIntake(double position) {
         intakeRaise.setPosition(position);
     }
+    public void intake() {
+        rollers.setPower(1);
+        intake.setPower(1);
+    }
     public void stoptake() {
         rollers.setPower(0);
         intake.setPower(0);
     }
     public void boxOut() {
-        box.setPosition(0.05);
+        box.setPosition(0.125);
     }
     public void boxIn() {
-        box.setPosition(0.885);
+        box.setPosition(0.9575);
     }
     public void raiseSlider(int position) {
         leftSlide.setTargetPosition(position);
@@ -331,12 +330,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return 0;
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).yRotationRate;
+        return 0.0;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

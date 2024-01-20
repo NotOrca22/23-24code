@@ -17,33 +17,33 @@ import org.firstinspires.ftc.vision.VisionPortal;
 
 import java.util.Locale;
 
-@Autonomous(name="Blue Near")
-public class BlueLeftAuto extends LinearOpMode {
+@Autonomous(name="Red Near")
+public class RedRightAuto extends LinearOpMode {
     private VisionPortal portal;
-    private BluePropSearchThreshold bluePropSearchThreshold;
+    private RedPropSearchThreshold redPropSearchThreshold;
     private boolean captured = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        bluePropSearchThreshold = new BluePropSearchThreshold();
+        redPropSearchThreshold = new RedPropSearchThreshold();
 
         portal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
                 .setCamera(BuiltinCameraDirection.BACK)
-                .addProcessor(bluePropSearchThreshold)
+                .addProcessor(redPropSearchThreshold)
                 .build();
 
 
 
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d(0,0,0))
+        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d(0,0,0))
                 .addTemporalMarker(() -> {
                     drive.raiseIntake(0.74);
                 })
                 .back(4)
-                .strafeRight(10.5)
+                .strafeLeft(11)
                 .back(20)
 //                .strafeTo(new Vector2d(-24, -10.5))
                 .addTemporalMarker(() -> {
@@ -68,16 +68,16 @@ public class BlueLeftAuto extends LinearOpMode {
                 .waitSeconds(0.15)
 
 
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .forward(7.5)
                 .addTemporalMarker(() -> {
-                    drive.raiseSlider(725);
+                    drive.raiseSlider(750);
                 })
                 .waitSeconds(0.4)
-                .strafeRight(2)
+//                .strafeLeft(1)
                 .forward(17.5)
                 .waitSeconds(0.1)
-                .forward(5)
+                .forward(4.5)
                 .waitSeconds(0.35)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1150);
@@ -92,7 +92,7 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.25)
-                .strafeLeft(17.75)
+                .strafeRight(17.75)
 //                .forward(8)
                 .waitSeconds(1)
 //                .strafeRight(15)
@@ -111,13 +111,13 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.boxOut();
                 })
                 .waitSeconds(0.05)
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .addTemporalMarker(() -> {
-                    drive.raiseSlider(725);
+                    drive.raiseSlider(750);
                 })
                 .waitSeconds(0.3)
-                .forward(32.25)
-                .strafeRight(4)
+                .forward(31.25)
+                .strafeLeft(4)
 
                 .waitSeconds(0.3)
                 .forward(8)
@@ -135,16 +135,16 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.25)
-                .strafeLeft(22)
+                .strafeRight(22)
 //                .forward(9)
 //                                                                                                                                                                        .forward(10)
                 .build();
 
 
 //
-        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
+        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
                 .back(28)
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
 //                                        .back(4)
                 .addTemporalMarker(() -> {
                     drive.outtake();
@@ -161,10 +161,10 @@ public class BlueLeftAuto extends LinearOpMode {
 //                                                .turn(Math.toRadians(-90))
 //                                                        .forward(30)
                 .addTemporalMarker(() -> {
-                    drive.raiseSlider(725);
+                    drive.raiseSlider(750);
                 })
                 .waitSeconds(0.5)
-                .strafeRight(3)
+                .strafeLeft(3)
 
                 .forward(9.25)
                 .waitSeconds(0.25)
@@ -181,12 +181,12 @@ public class BlueLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.2)
-                .strafeLeft(29.5)
+                .strafeRight(29.5)
 //                .forward(8)
                 .build();
         drive.raiseIntake(0.74);
         waitForStart();
-        String position = bluePropSearchThreshold.getPropPosition();
+        String position = redPropSearchThreshold.getPropPosition();
         telemetry.addData("Prop Position", position);
         telemetry.update();
         if(isStopRequested()) return;

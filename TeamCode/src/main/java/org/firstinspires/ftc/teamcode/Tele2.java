@@ -71,9 +71,9 @@ public class Tele2 extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             if (boxIn) {
-                box.setPosition(0.885);
+                box.setPosition(0.9575);
             } else {
-                box.setPosition(0.0375);
+                box.setPosition(0.125);
             }
             if (gamepad2.a) {
                 boxIn = false;
@@ -105,7 +105,11 @@ public class Tele2 extends LinearOpMode {
             } else if (intakePosition == 2) {
                 intakeRaise.setPosition(0.78);
             } else if (intakePosition == 3) {
-                intakeRaise.setPosition(0.825);
+                intakeRaise.setPosition(0.819);
+            } else if (intakePosition == 4) {
+                intakeRaise.setPosition(0.85);
+            } else {
+                intakeRaise.setPosition(0.884);
             }
             if (gamepad1.x) {
                 intakePosition = 1;
@@ -113,6 +117,10 @@ public class Tele2 extends LinearOpMode {
                 intakePosition = 2;
             } else if (gamepad1.b) {
                 intakePosition = 3;
+            } else if (gamepad1.y) {
+                intakePosition = 4;
+            } else if (gamepad1.right_bumper) {
+                intakePosition = 5;
             }
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);

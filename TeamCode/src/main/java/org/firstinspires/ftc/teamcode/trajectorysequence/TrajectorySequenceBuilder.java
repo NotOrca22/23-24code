@@ -432,7 +432,7 @@ public class TrajectorySequenceBuilder {
     }
 
     public TrajectorySequenceBuilder turn(double angle) {
-        return turn(angle*180/178.5, currentTurnConstraintMaxAngVel, currentTurnConstraintMaxAngAccel);
+        return turn(angle*180/178, currentTurnConstraintMaxAngVel, currentTurnConstraintMaxAngAccel);
     }
 
     public TrajectorySequenceBuilder turn(double angle, double maxAngVel, double maxAngAccel) {
