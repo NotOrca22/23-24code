@@ -5,7 +5,6 @@ import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,8 +15,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name="Tele2")
-public class Tele2 extends LinearOpMode {
+import java.time.Instant;
+
+@TeleOp(name="!Tele2")
+public class Tele22 extends LinearOpMode {
     DcMotor intake;
     Servo box;
     DcMotor rollers;
@@ -33,6 +34,8 @@ public class Tele2 extends LinearOpMode {
     NormalizedColorSensor topColor;
     NormalizedColorSensor bottomColor;
     int intakePosition = 1;
+    long twoDetected = Long.MAX_VALUE-1;
+    boolean outtakeStopped = false;
     public static final double ARM_GEAR_RATIO = 13.7;
     public static final int ARM_MOTOR_SPEED_IN_RPM = 435;
     public static final double PULLEY_DIAMETER_IN_MM = 35.9007007;
@@ -42,9 +45,9 @@ public class Tele2 extends LinearOpMode {
 
     //    boolean intakeOn = false;
     public void raiseSlider(int position) {
-        leftSlide.setTargetPosition(position);
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftSlide.setVelocity(ARM_FULL_SPEED_IN_COUNTS);
+//        leftSlide.setTargetPosition(position);
+//        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        leftSlide.setPower(ARM_FULL_SPEED_IN_COUNTS);
         rightSlide.setTargetPosition(position);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setVelocity(ARM_FULL_SPEED_IN_COUNTS);
@@ -55,9 +58,11 @@ public class Tele2 extends LinearOpMode {
     final float[] hsvValues = new float[3];
     final float[] hsvValues2 = new float[3];
     // 0.82 for 2 pixels
+    boolean outtaking = false;
+    boolean previouslyOuttaking = false;
+    int slideHeight = 0;
     @Override
     public void runOpMode() throws InterruptedException {
-
         intake = hardwareMap.dcMotor.get("intake");
         box = hardwareMap.servo.get("box");
         intakeRaise = hardwareMap.servo.get("intakeRaise");
@@ -84,18 +89,19 @@ public class Tele2 extends LinearOpMode {
         bottomColor = hardwareMap.get(NormalizedColorSensor.class, "bottomColor");
         plane.setPosition(0.47);
 //        box.setPosition(1);
-        int slideHeight = 0;
+
         waitForStart();
         while (opModeIsActive()) {
             if (boxIn) {
                 box.setPosition(0.9575);
             } else {
-                box.setPosition(0.125);
+                box.setPosition(0.1475);
             }
             if (gamepad2.a) {
                 boxIn = false;
             } else if (gamepad2.x) {
                 boxIn = true;
+                slideHeight = 0;
             }
             if (gamepad2.b) {
                 launches += 1;
@@ -105,12 +111,41 @@ public class Tele2 extends LinearOpMode {
             } else {
                 plane.setPosition(0.47);
             }
-            if (gamepad2.right_bumper) {
-                intakeOn = true;
-            } else if (gamepad2.left_bumper) {
-                intakeOn = false;
+            if (((!(((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM) < 1)) || (!(((DistanceSensor) topColor).getDistance(DistanceUnit.CM) < 1)))) {
+                outtaking = false;
+                previouslyOuttaking = false;
+                twoDetected = Long.MAX_VALUE-1;
+            } else {
+                if (!previouslyOuttaking) {
+//                    wait(250);
+
+                    long millis = System.currentTimeMillis();
+                    twoDetected = millis;
+
+                }
             }
-            if (intakeOn) {
+            if (!previouslyOuttaking && System.currentTimeMillis()-twoDetected>=250) {
+                outtaking = true;
+                previouslyOuttaking = true;
+                outtakeStopped = false;
+            }
+            if (gamepad2.right_bumper && boxIn && intakePosition < 150 && ((!(((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM) < 1)) || (!(((DistanceSensor) topColor).getDistance(DistanceUnit.CM) < 1)))) {
+                intakeOn = true;
+                outtaking = false;
+                outtakeStopped = true;
+                previouslyOuttaking = false;
+            } else if (gamepad2.left_bumper || !boxIn || intakePosition > 150 || !((!(((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM) < 1)) || (!(((DistanceSensor) topColor).getDistance(DistanceUnit.CM) < 1)))) {
+                intakeOn = false;
+                if (gamepad2.left_bumper) {
+                    outtaking = false;
+                    outtakeStopped = true;
+                    previouslyOuttaking = false;
+                }
+            }
+            if (outtaking) {
+                rollers.setPower(-1);
+                intake.setPower(-1);
+            } else if (intakeOn) {
                 rollers.setPower(1);
                 intake.setPower(1);
             } else {
@@ -124,7 +159,7 @@ public class Tele2 extends LinearOpMode {
             } else if (intakePosition == 3) {
                 intakeRaise.setPosition(0.819);
             } else if (intakePosition == 4) {
-                intakeRaise.setPosition(0.85);
+                intakeRaise.setPosition(0.8435);
             } else {
                 intakeRaise.setPosition(0.884);
             }
@@ -142,36 +177,32 @@ public class Tele2 extends LinearOpMode {
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);
 //            int currentPosition = leftSlide.getCurrentPosition();
+            int raiseStep = 0;
             if(gamepad2.dpad_down) {
-                slideHeight += -15;
+                slideHeight += -70;
             } else if (gamepad2.dpad_up) {
-                slideHeight += 15;
+                slideHeight += 70;
             } else if (gamepad2.y) {
-                slideHeight += -40;
+                slideHeight += -120;
             } else {
                 slideHeight += 0;
             }
 //            targetPosition += raiseStep;
-            if (slideHeight > 2800) {
-                slideHeight = 2800;
+            if (slideHeight > 3100) {
+                slideHeight = 3100;
             }
             else if (slideHeight < -25) {
                 slideHeight = -25;
             }
             raiseSlider(slideHeight);
-            double maxPower = 1.0;
-//            double maxY = 1.0;
             double y = -gamepad1.left_stick_y; // Remember, Y stick is reversed!
             double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-            if (frontSensor.getDistance(DistanceUnit.INCH) < 15 && y > 0) {
-                maxPower = 0.2;
-//                maxY = 0.2;
-            }
-            frontLeft.setPower(Math.min((y + x + rx)*0.85, maxPower));
-            backLeft.setPower(Math.min((y - x + rx)*0.85, maxPower));
-            frontRight.setPower(Math.min((y - x - rx)*0.85, maxPower));
-            backRight.setPower(Math.min((y + x - rx)*0.85, maxPower));
+            double rx = gamepad1.right_stick_x * 0.85;
+
+            frontLeft.setPower((y + x + rx)*0.9);
+            backLeft.setPower((y - x + rx)*0.9);
+            frontRight.setPower((y - x - rx)*0.9);
+            backRight.setPower((y + x - rx)*0.9);
             telemetry.addData("launches", launches);
             NormalizedRGBA colors = topColor.getNormalizedColors();
 

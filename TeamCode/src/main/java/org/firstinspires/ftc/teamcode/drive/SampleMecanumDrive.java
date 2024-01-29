@@ -32,17 +32,21 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -77,7 +81,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     private DcMotor rollers, intake;
     Servo box, intakeRaise;
     private List<DcMotorEx> motors;
-
+    private NormalizedColorSensor topColor;
+    private NormalizedColorSensor bottomColor;
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
@@ -115,6 +120,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         intakeRaise = hardwareMap.get(Servo.class, "intakeRaise");
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        topColor = hardwareMap.get(NormalizedColorSensor.class, "topColor");
+        bottomColor = hardwareMap.get(NormalizedColorSensor.class, "bottomColor");
 //        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -208,6 +215,13 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightSlide.setTargetPosition(position);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setVelocity(ARM_FULL_SPEED_IN_COUNTS);
+    }
+    public boolean checkLowerPixel() {
+        if (((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM) < 1.15) {
+            return true;
+        } else {
+            return false;
+        }
     }
     public void followTrajectoryAsync(Trajectory trajectory) {
         trajectorySequenceRunner.followTrajectorySequenceAsync(

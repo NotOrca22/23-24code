@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="Tele")
-public class IntakeTest extends LinearOpMode {
+@TeleOp(name="Solo Tele")
+public class SoloTele extends LinearOpMode {
     DcMotor intake;
     Servo box;
     DcMotor rollers;
@@ -40,7 +40,7 @@ public class IntakeTest extends LinearOpMode {
     }
     boolean boxIn = true;
     int launches = 0;
-
+    boolean intakeOn = false;
     // 0.82 for 2 pixels
     @Override
     public void runOpMode() throws InterruptedException {
@@ -79,6 +79,7 @@ public class IntakeTest extends LinearOpMode {
                 boxIn = false;
             } else if (gamepad1.x) {
                 boxIn = true;
+                slideHeight = 0;
             }
             if (gamepad1.b) {
                 launches += 1;
@@ -88,12 +89,40 @@ public class IntakeTest extends LinearOpMode {
             } else {
                 plane.setPosition(0.47);
             }
-            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
-//            box.setPosition(0.8125);
-            rollers.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+            if (gamepad1.right_bumper) {
+                intakeOn = true;
+            } else if (gamepad1.left_bumper) {
+                intakeOn = false;
+            }
+            if (intakeOn) {
+                rollers.setPower(1);
+                intake.setPower(1);
+            } else {
+                rollers.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+                intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+            }
             if (intakePosition == 1) {
                 intakeRaise.setPosition(0.74);
+            } else if (intakePosition == 2) {
+                intakeRaise.setPosition(0.78);
+            } else if (intakePosition == 3) {
+                intakeRaise.setPosition(0.819);
+            } else if (intakePosition == 4) {
+                intakeRaise.setPosition(0.845);
+            } else {
+                intakeRaise.setPosition(0.884);
             }
+//            if (gamepad1.x) {
+//                intakePosition = 1;
+//            } else if (gamepad1.a) {
+//                intakePosition = 2;
+//            } else if (gamepad1.b) {
+//                intakePosition = 3;
+//            } else if (gamepad1.y) {
+//                intakePosition = 4;
+//            } else if (gamepad1.right_bumper) {
+//                intakePosition = 5;
+//            }
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);
 //            int currentPosition = leftSlide.getCurrentPosition();
@@ -103,7 +132,7 @@ public class IntakeTest extends LinearOpMode {
             } else if (gamepad1.dpad_up) {
                 slideHeight += 15;
             } else if (gamepad1.y) {
-                slideHeight += -40;
+                slideHeight += -35;
             } else {
                 slideHeight += 0;
             }
@@ -119,10 +148,10 @@ public class IntakeTest extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            frontLeft.setPower(y + x + rx);
-            backLeft.setPower(y - x + rx);
-            frontRight.setPower(y - x - rx);
-            backRight.setPower(y + x - rx);
+            frontLeft.setPower((y + x + rx)*0.85);
+            backLeft.setPower((y - x + rx)*0.85);
+            frontRight.setPower((y - x - rx)*0.85);
+            backRight.setPower((y + x - rx)*0.85);
             telemetry.addData("launches", launches);
             telemetry.update();
         }

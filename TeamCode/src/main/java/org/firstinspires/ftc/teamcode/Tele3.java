@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name="Tele2")
-public class Tele2 extends LinearOpMode {
+@TeleOp(name="Tele3")
+public class Tele3 extends LinearOpMode {
     DcMotor intake;
     Servo box;
     DcMotor rollers;
@@ -52,12 +48,13 @@ public class Tele2 extends LinearOpMode {
     boolean boxIn = true;
     int launches = 0;
     boolean intakeOn = false;
-    final float[] hsvValues = new float[3];
-    final float[] hsvValues2 = new float[3];
     // 0.82 for 2 pixels
     @Override
     public void runOpMode() throws InterruptedException {
-
+        boolean outtaking = false;
+        boolean previouslyOuttaking = false;
+        long twoDetected = Long.MAX_VALUE-1;
+        boolean outtakeStopped = false;
         intake = hardwareMap.dcMotor.get("intake");
         box = hardwareMap.servo.get("box");
         intakeRaise = hardwareMap.servo.get("intakeRaise");
@@ -69,6 +66,10 @@ public class Tele2 extends LinearOpMode {
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         backLeft = hardwareMap.dcMotor.get("backLeft");
         plane = hardwareMap.servo.get("plane");
+        frontSensor = hardwareMap.get(DistanceSensor.class, "frontSensor");
+        topColor = hardwareMap.get(NormalizedColorSensor.class, "topColor");
+        bottomColor = hardwareMap.get(NormalizedColorSensor.class, "bottomColor");
+
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -79,9 +80,6 @@ public class Tele2 extends LinearOpMode {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         plane.setDirection(Servo.Direction.REVERSE);
-        frontSensor = hardwareMap.get(DistanceSensor.class, "frontSensor");
-        topColor = hardwareMap.get(NormalizedColorSensor.class, "topColor");
-        bottomColor = hardwareMap.get(NormalizedColorSensor.class, "bottomColor");
         plane.setPosition(0.47);
 //        box.setPosition(1);
         int slideHeight = 0;
@@ -96,6 +94,7 @@ public class Tele2 extends LinearOpMode {
                 boxIn = false;
             } else if (gamepad2.x) {
                 boxIn = true;
+                slideHeight = 0;
             }
             if (gamepad2.b) {
                 launches += 1;
@@ -105,12 +104,41 @@ public class Tele2 extends LinearOpMode {
             } else {
                 plane.setPosition(0.47);
             }
-            if (gamepad2.right_bumper) {
-                intakeOn = true;
-            } else if (gamepad2.left_bumper) {
-                intakeOn = false;
+            if (((!(((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM) < 1)) || (!(((DistanceSensor) topColor).getDistance(DistanceUnit.CM) < 1)))) {
+                outtaking = false;
+                previouslyOuttaking = false;
+                twoDetected = Long.MAX_VALUE-1;
+            } else {
+                if (!previouslyOuttaking) {
+//                    wait(250);
+
+                    long millis = System.currentTimeMillis();
+                    twoDetected = millis;
+
+                }
             }
-            if (intakeOn) {
+            if (!previouslyOuttaking && System.currentTimeMillis()-twoDetected>=250) {
+                outtaking = true;
+                previouslyOuttaking = true;
+                outtakeStopped = false;
+            }
+            if (gamepad2.right_bumper && boxIn && intakePosition < 150 && ((!(((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM) < 1)) || (!(((DistanceSensor) topColor).getDistance(DistanceUnit.CM) < 1)))) {
+                intakeOn = true;
+                outtaking = false;
+                outtakeStopped = true;
+                previouslyOuttaking = false;
+            } else if (gamepad2.left_bumper || !boxIn || intakePosition > 150 || !((!(((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM) < 1)) || (!(((DistanceSensor) topColor).getDistance(DistanceUnit.CM) < 1)))) {
+                intakeOn = false;
+                if (gamepad2.left_bumper) {
+                    outtaking = false;
+                    outtakeStopped = true;
+                    previouslyOuttaking = false;
+                }
+            }
+            if (outtaking) {
+                rollers.setPower(-1);
+                intake.setPower(-1);
+            } else if (intakeOn) {
                 rollers.setPower(1);
                 intake.setPower(1);
             } else {
@@ -142,12 +170,13 @@ public class Tele2 extends LinearOpMode {
             leftSlide.setTargetPositionTolerance(100);
             rightSlide.setTargetPositionTolerance(100);
 //            int currentPosition = leftSlide.getCurrentPosition();
+            int raiseStep = 0;
             if(gamepad2.dpad_down) {
-                slideHeight += -15;
+                slideHeight += -30;
             } else if (gamepad2.dpad_up) {
-                slideHeight += 15;
+                slideHeight += 30;
             } else if (gamepad2.y) {
-                slideHeight += -40;
+                slideHeight += -65;
             } else {
                 slideHeight += 0;
             }
@@ -159,65 +188,15 @@ public class Tele2 extends LinearOpMode {
                 slideHeight = -25;
             }
             raiseSlider(slideHeight);
-            double maxPower = 1.0;
-//            double maxY = 1.0;
             double y = -gamepad1.left_stick_y; // Remember, Y stick is reversed!
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
-            if (frontSensor.getDistance(DistanceUnit.INCH) < 15 && y > 0) {
-                maxPower = 0.2;
-//                maxY = 0.2;
-            }
-            frontLeft.setPower(Math.min((y + x + rx)*0.85, maxPower));
-            backLeft.setPower(Math.min((y - x + rx)*0.85, maxPower));
-            frontRight.setPower(Math.min((y - x - rx)*0.85, maxPower));
-            backRight.setPower(Math.min((y + x - rx)*0.85, maxPower));
+
+            frontLeft.setPower((y + x + rx)*0.85);
+            backLeft.setPower((y - x + rx)*0.85);
+            frontRight.setPower((y - x - rx)*0.85);
+            backRight.setPower((y + x - rx)*0.85);
             telemetry.addData("launches", launches);
-            NormalizedRGBA colors = topColor.getNormalizedColors();
-
-            /* Use telemetry to display feedback on the driver station. We show the red, green, and blue
-             * normalized values from the sensor (in the range of 0 to 1), as well as the equivalent
-             * HSV (hue, saturation and value) values. See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
-             * for an explanation of HSV color. */
-
-            // Update the hsvValues array by passing it to Color.colorToHSV()
-            Color.colorToHSV(colors.toColor(), hsvValues);
-
-            telemetry.addLine()
-                    .addData("Red", "%.3f", colors.red)
-                    .addData("Green", "%.3f", colors.green)
-                    .addData("Blue", "%.3f", colors.blue);
-            telemetry.addLine()
-                    .addData("Hue", "%.3f", hsvValues[0])
-                    .addData("Saturation", "%.3f", hsvValues[1])
-                    .addData("Value", "%.3f", hsvValues[2]);
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
-//            telemetry.addData("bottom R", bottomColor.red());
-//            telemetry.addData("bottom G", bottomColor.green());
-//            telemetry.addData("bottom B", bottomColor.blue());
-            NormalizedRGBA colors2 = bottomColor.getNormalizedColors();
-            telemetry.addData("Top Distance (cm)", "%.3f", ((DistanceSensor) topColor).getDistance(DistanceUnit.CM));
-
-            /* Use telemetry to display feedback on the driver station. We show the red, green, and blue
-             * normalized values from the sensor (in the range of 0 to 1), as well as the equivalent
-             * HSV (hue, saturation and value) values. See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
-             * for an explanation of HSV color. */
-
-            // Update the hsvValues array by passing it to Color.colorToHSV()
-            Color.colorToHSV(colors2.toColor(), hsvValues2);
-
-            telemetry.addLine()
-                    .addData("Red Bottom", "%.3f", colors2.red)
-                    .addData("Green", "%.3f", colors2.green)
-                    .addData("Blue", "%.3f", colors2.blue);
-            telemetry.addLine()
-                    .addData("Hue", "%.3f", hsvValues2[0])
-                    .addData("Saturation", "%.3f", hsvValues2[1])
-                    .addData("Value", "%.3f", hsvValues2[2]);
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
-            telemetry.addData("front distance", frontSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("Bottom Distance (cm)", "%.3f", ((DistanceSensor) bottomColor).getDistance(DistanceUnit.CM));
-            telemetry.addData("slideHeight", slideHeight);
             telemetry.update();
         }
     }
