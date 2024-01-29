@@ -121,7 +121,7 @@ public class RedRightAuto extends LinearOpMode {
                 .waitSeconds(1)
                 .build();
         TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d())
-                .back(28.75)
+                .back(30)
                 .addTemporalMarker(() -> {
                     drive.raiseIntake(0.91);
                 })
@@ -140,7 +140,7 @@ public class RedRightAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.3)
                 .forward(31.25)
-                .strafeLeft(3.35)
+                .strafeLeft(2.1)
 
                 .waitSeconds(0.3)
                 .forward(8)

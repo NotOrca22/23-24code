@@ -48,21 +48,22 @@ public class RedLeftAuto extends LinearOpMode {
                 })
                 .back(28)
                 .turn(Math.toRadians(-90))
-                .back(0.5)
+                .back(2.5)
                 .addTemporalMarker(() -> {
-                    drive.outtake();
+                    drive.raiseIntake(0.91);
+//                    drive.outtake();
                 })
                 .waitSeconds(0.45)
-                .addTemporalMarker(() -> {
-                    drive.stoptake();
-                })
-                .forward(5)
+//                .addTemporalMarker(() -> {
+//                    drive.stoptake();
+//                })
+                .forward(7)
                 .turn(Math.toRadians(-90))
                 .forward(24.5)
                 .turn(Math.toRadians(-90))
                 .forward(72)
                 .turn(Math.toRadians(-90))
-                .forward(31)
+                .forward(29.5)
                 .turn(Math.toRadians(90))
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(850);
@@ -163,14 +164,15 @@ public class RedLeftAuto extends LinearOpMode {
                 })
                 .back(48)
                 .turn(Math.toRadians(180))
+                .back(3)
                 .addTemporalMarker(() -> {
-                    drive.outtake();
+                    drive.raiseIntake(0.91);
                 })
                 .waitSeconds(0.45)
-                .addTemporalMarker(() -> {
-                    drive.stoptake();
-                })
-                .forward(3)
+//                .addTemporalMarker(() -> {
+//                    drive.stoptake();
+//                })
+                .forward(6)
                 .turn(Math.toRadians(-90))
                 .forward(73)
                 .addTemporalMarker(() -> {
@@ -275,24 +277,25 @@ public class RedLeftAuto extends LinearOpMode {
                 .back(48)
                 .turn(Math.toRadians(180))
                 .strafeLeft(11.75)
-                .back(2)
+                .back(4)
                 .addTemporalMarker(() -> {
-                    drive.outtake();
+//                    drive.outtake();
+                    drive.raiseIntake(0.91);
                 })
                 .waitSeconds(0.45)
-                .addTemporalMarker(() -> {
-                    drive.stoptake();
-                })
+//                .addTemporalMarker(() -> {
+//                    drive.stoptake();
+//                })
 //                .forward(2)
 //                .turn(Math.toRadians(-90))
-                .forward(8.45)
+                .forward(8)
                 .turn(Math.toRadians(-90))
                 .forward(85.5)
                 .turn(Math.toRadians(-90))
                 .addTemporalMarker(() -> {
                     drive.boxOut();
                 })
-                .forward(24.5)
+                .forward(23.5)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(850);
                 })
