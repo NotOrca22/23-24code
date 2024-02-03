@@ -40,20 +40,20 @@ public class RedRightAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d(0,0,0))
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.74);
+                    drive.raiseIntake(0.537);
                 })
                 .back(4)
                 .strafeLeft(11)
-                .back(20)
+                .back(23.5)
 //                .strafeTo(new Vector2d(-24, -10.5))
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
 //                .addTemporalMarker(() -> {
 //                    drive.stoptake();
 //                })
-                .forward(6)
+                .forward(8.5)
 //                .addTemporalMarker(() -> {
 
 //                })
@@ -74,7 +74,7 @@ public class RedRightAuto extends LinearOpMode {
                     drive.raiseSlider(725);
                 })
                 .waitSeconds(0.4)
-//                .strafeLeft(1)
+                .strafeLeft(0.5)
                 .forward(17.5)
                 .waitSeconds(0.1)
                 .forward(4.5)
@@ -84,6 +84,7 @@ public class RedRightAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence rightAlreadyDropped = drive.trajectorySequenceBuilder(right.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1150);
                 })
@@ -123,7 +124,7 @@ public class RedRightAuto extends LinearOpMode {
         TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d())
                 .back(30)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
 //                .addTemporalMarker(() -> {
@@ -143,7 +144,7 @@ public class RedRightAuto extends LinearOpMode {
                 .strafeLeft(2.1)
 
                 .waitSeconds(0.3)
-                .forward(8)
+                .forward(8.5)
                 .waitSeconds(0.25)
 
 //                .forward(9)
@@ -153,6 +154,7 @@ public class RedRightAuto extends LinearOpMode {
 
 //
         TrajectorySequence centerAlreadyDropped = drive.trajectorySequenceBuilder(center.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1200);
                 })
@@ -193,7 +195,7 @@ public class RedRightAuto extends LinearOpMode {
                 .back(4.25)
 //                                        .back(4)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
 //                .addTemporalMarker(() -> {
@@ -218,6 +220,7 @@ public class RedRightAuto extends LinearOpMode {
 //                .forward(8)
                 .build();
         TrajectorySequence leftAlreadyDropped = drive.trajectorySequenceBuilder(left.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1100);
                 })
@@ -251,7 +254,7 @@ public class RedRightAuto extends LinearOpMode {
                 .strafeRight(32)
                 .forward(12)
                 .build();
-        drive.raiseIntake(0.74);
+        drive.raiseIntake(0.537);
         waitForStart();
         String position = redPropSearchThreshold.getPropPosition();
         telemetry.addData("Prop Position", position);

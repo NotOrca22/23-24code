@@ -44,13 +44,13 @@ public class BlueRightAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.05)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.74);
+                    drive.raiseIntake(0.537);
                 })
                 .back(28)
                 .turn(Math.toRadians(90))
                 .back(3.75)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
 //                .addTemporalMarker(() -> {
@@ -60,9 +60,9 @@ public class BlueRightAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .forward(24.5)
                 .turn(Math.toRadians(90))
-                .forward(72)
+                .forward(77.5)
                 .turn(Math.toRadians(89))
-                .forward(26.25)
+                .forward(27.25)
                 .turn(Math.toRadians(-90))
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(850);
@@ -72,7 +72,7 @@ public class BlueRightAuto extends LinearOpMode {
                     drive.boxOut();
                 })
                 .waitSeconds(0.25)
-                .forward(17.5)
+                .forward(11)
                 .waitSeconds(0.1)
                 .forward(5.5)
 //                .strafeLeft(22.5)
@@ -121,16 +121,17 @@ public class BlueRightAuto extends LinearOpMode {
 //                .forward(2.5)
                 .build();
         TrajectorySequence leftAlreadyDropped = drive.trajectorySequenceBuilder(left.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1300);
                 })
                 .waitSeconds(0.25)
-                .back(6)
+                .back(6.5)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.3)
-                .strafeRight(29)
+//                .strafeRight(29)
                 .addTemporalMarker(() -> {
                     drive.boxIn();
                 })
@@ -143,12 +144,12 @@ public class BlueRightAuto extends LinearOpMode {
                     drive.raiseSlider(1300);
                 })
                 .waitSeconds(0.25)
-                .back(6)
+                .back(6.5)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.3)
-                .strafeRight(29)
+//                .strafeRight(29)
                 .addTemporalMarker(() -> {
                     drive.boxIn();
                 })
@@ -162,7 +163,7 @@ public class BlueRightAuto extends LinearOpMode {
                 .back(45)
                 .turn(Math.toRadians(180))
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
 
@@ -183,7 +184,9 @@ public class BlueRightAuto extends LinearOpMode {
                 .waitSeconds(0.5)
                 .turn(Math.toRadians(-90))
 
-                .forward(15)
+                .forward(10)
+                .waitSeconds(0.1)
+                .forward(5)
 //                .addTemporalMarker(() -> {
 //                    drive.raiseIntake(0.95);
 //                })
@@ -232,6 +235,7 @@ public class BlueRightAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence centerAlreadyDropped = drive.trajectorySequenceBuilder(center.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1250);
                 })
@@ -241,8 +245,8 @@ public class BlueRightAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                     drive.boxIn();
                 })
-                .strafeRight(18)
-                .forward(3)
+//                .strafeRight(18)
+//                .forward(3)
                 .build();
 
     TrajectorySequence centerNotDropped = drive.trajectorySequenceBuilder(center.end())
@@ -256,8 +260,8 @@ public class BlueRightAuto extends LinearOpMode {
                 drive.raiseSlider(0);
                 drive.boxIn();
             })
-            .strafeRight(18)
-            .forward(4.5)
+//            .strafeRight(18)
+//            .forward(4.5)
             .build();
 //
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
@@ -266,14 +270,14 @@ public class BlueRightAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.05)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.74);
+                    drive.raiseIntake(0.537);
                 })
                 .back(48)
                 .turn(Math.toRadians(180))
-                .strafeRight(11.75)
+                .strafeRight(11.25)
                 .back(4.5)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
                 .addTemporalMarker(() -> {
@@ -281,14 +285,14 @@ public class BlueRightAuto extends LinearOpMode {
                 })
 //                .forward(2)
 //                .turn(Math.toRadians(-90))
-                .forward(12.75)
+                .forward(11)
                 .turn(Math.toRadians(90))
                 .forward(85.5)
                 .turn(Math.toRadians(90))
                 .addTemporalMarker(() -> {
                     drive.boxOut();
                 })
-                .forward(21.5)
+                .forward(18.5)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(850);
                 })
@@ -344,6 +348,7 @@ public class BlueRightAuto extends LinearOpMode {
 //                .forward(2.5)
                 .build();
         TrajectorySequence rightAlreadyDropped = drive.trajectorySequenceBuilder(right.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1250);
                 })
@@ -353,8 +358,8 @@ public class BlueRightAuto extends LinearOpMode {
                                     drive.raiseSlider(0);
                                     drive.boxIn();
                                 })
-                                        .strafeRight(18.5)
-                                                .forward(4.5)
+//                                        .strafeRight(14)
+//                                                .forward(4.5)
                                                         .build();
         TrajectorySequence rightNotDropped = drive.trajectorySequenceBuilder(right.end())
                 .forward(5)
@@ -367,10 +372,10 @@ public class BlueRightAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                     drive.boxIn();
                 })
-                .strafeRight(18.5)
-                .forward(5.75)
+//                .strafeRight(14)
+//                .forward(5.75)
                 .build();
-        drive.raiseIntake(0.74);
+        drive.raiseIntake(0.537);
         waitForStart();
         String position = bluePropSearchThreshold.getPropPosition();
         telemetry.addData("Prop Position", position);

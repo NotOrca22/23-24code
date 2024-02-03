@@ -68,6 +68,7 @@ public class Tele4 extends LinearOpMode {
         plane.setPosition(0.47);
 //        box.setPosition(1);
         int slideHeight = 0;
+//        intakeRaise.setPosition(0.5375);
         waitForStart();
         while (opModeIsActive()) {
             if (boxIn) {
@@ -78,6 +79,7 @@ public class Tele4 extends LinearOpMode {
             if (gamepad2.a) {
                 boxIn = false;
             } else if (gamepad2.x) {
+                intakePosition = 1;
                 boxIn = true;
                 slideHeight = 0;
             }
@@ -102,15 +104,15 @@ public class Tele4 extends LinearOpMode {
                 intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
             }
             if (intakePosition == 1) {
-                intakeRaise.setPosition(0.775);
+                intakeRaise.setPosition(0.537);
             } else if (intakePosition == 2) {
-                intakeRaise.setPosition(0.815);
+                intakeRaise.setPosition(0.545);
             } else if (intakePosition == 3) {
-                intakeRaise.setPosition(0.84);
+                intakeRaise.setPosition(0.55);
             } else if (intakePosition == 4) {
-                intakeRaise.setPosition(0.88);
+                intakeRaise.setPosition(0.56);
             } else {
-                intakeRaise.setPosition(0.91);
+                intakeRaise.setPosition(0.565);
             }
             if (gamepad1.x) {
                 intakePosition = 1;

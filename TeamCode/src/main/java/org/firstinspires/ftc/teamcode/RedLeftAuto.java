@@ -44,26 +44,26 @@ public class RedLeftAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.05)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.74);
+                    drive.raiseIntake(0.537);
                 })
                 .back(28)
                 .turn(Math.toRadians(-90))
-                .back(2.5)
+                .back(3.75)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
 //                    drive.outtake();
                 })
                 .waitSeconds(0.45)
 //                .addTemporalMarker(() -> {
 //                    drive.stoptake();
 //                })
-                .forward(7)
+                .forward(8.25)
                 .turn(Math.toRadians(-90))
                 .forward(24.5)
                 .turn(Math.toRadians(-90))
-                .forward(72)
+                .forward(76)
                 .turn(Math.toRadians(-90))
-                .forward(29.5)
+                .forward(30.5)
                 .turn(Math.toRadians(90))
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(850);
@@ -73,7 +73,7 @@ public class RedLeftAuto extends LinearOpMode {
                     drive.boxOut();
                 })
                 .waitSeconds(0.25)
-                .forward(17.5)
+                .forward(13.5)
                 .waitSeconds(0.1)
 //                .forward(5.5)
 //                .strafeLeft(22.5)
@@ -122,6 +122,7 @@ public class RedLeftAuto extends LinearOpMode {
 //                .forward(2.5)
                 .build();
         TrajectorySequence rightAlreadyDropped = drive.trajectorySequenceBuilder(right.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1300);
                 })
@@ -131,11 +132,11 @@ public class RedLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.3)
-                .strafeLeft(29)
+//                .strafeLeft(29)
                 .addTemporalMarker(() -> {
                     drive.boxIn();
                 })
-                .forward(4)
+//                .forward(4)
                 .waitSeconds(0.7)
                 .build();
         TrajectorySequence rightNotDropped = drive.trajectorySequenceBuilder(right.end())
@@ -150,12 +151,12 @@ public class RedLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                 })
                 .waitSeconds(0.3)
-                .strafeLeft(29)
+//                .strafeLeft(29)
                 .addTemporalMarker(() -> {
                     drive.boxIn();
                 })
                 .waitSeconds(0.7)
-                .forward(5)
+//                .forward(5)
                 .build();
 
         TrajectorySequence center = drive.trajectorySequenceBuilder(new Pose2d())
@@ -164,15 +165,15 @@ public class RedLeftAuto extends LinearOpMode {
                 })
                 .back(48)
                 .turn(Math.toRadians(180))
-                .back(3)
+                .back(4.25)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
 //                .addTemporalMarker(() -> {
 //                    drive.stoptake();
 //                })
-                .forward(6)
+                .forward(7.25)
                 .turn(Math.toRadians(-90))
                 .forward(73)
                 .addTemporalMarker(() -> {
@@ -184,7 +185,7 @@ public class RedLeftAuto extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .forward(28)
                 .addTemporalMarker(() -> {
-                    drive.raiseSlider(850);
+                    drive.raiseSlider(830);
                 })
                 .waitSeconds(0.5)
                 .turn(Math.toRadians(90))
@@ -238,6 +239,7 @@ public class RedLeftAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence centerAlreadyDropped = drive.trajectorySequenceBuilder(center.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1250);
                 })
@@ -247,8 +249,8 @@ public class RedLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                     drive.boxIn();
                 })
-                .strafeLeft(18)
-                .forward(3)
+//                .strafeLeft(18)
+//                .forward(3)
                 .build();
 
         TrajectorySequence centerNotDropped = drive.trajectorySequenceBuilder(center.end())
@@ -262,8 +264,8 @@ public class RedLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                     drive.boxIn();
                 })
-                .strafeLeft(18)
-                .forward(4.5)
+//                .strafeLeft(18)
+//                .forward(4.5)
                 .build();
 //
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
@@ -272,7 +274,7 @@ public class RedLeftAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.05)
                 .addTemporalMarker(() -> {
-                    drive.raiseIntake(0.74);
+                    drive.raiseIntake(0.537);
                 })
                 .back(48)
                 .turn(Math.toRadians(180))
@@ -280,7 +282,7 @@ public class RedLeftAuto extends LinearOpMode {
                 .back(4)
                 .addTemporalMarker(() -> {
 //                    drive.outtake();
-                    drive.raiseIntake(0.91);
+                    drive.raiseIntake(0.565);
                 })
                 .waitSeconds(0.45)
 //                .addTemporalMarker(() -> {
@@ -289,19 +291,21 @@ public class RedLeftAuto extends LinearOpMode {
 //                .forward(2)
 //                .turn(Math.toRadians(-90))
                 .forward(8)
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(-91))
                 .forward(85.5)
                 .turn(Math.toRadians(-90))
                 .addTemporalMarker(() -> {
                     drive.boxOut();
                 })
-                .forward(23.5)
+                .forward(22)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(850);
                 })
                 .waitSeconds(0.5)
                 .turn(Math.toRadians(90))
-                .forward(14)
+                .forward(10)
+                .waitSeconds(0.1)
+                .forward(5.5)
 //                .strafeRight(22.5)
 //                .turn(Math.toRadians(180*179/180))
 //                .addTemporalMarker(() -> {
@@ -349,6 +353,7 @@ public class RedLeftAuto extends LinearOpMode {
 //                .forward(2.5)
                 .build();
         TrajectorySequence leftAlreadyDropped = drive.trajectorySequenceBuilder(left.end())
+                .forward(1)
                 .addTemporalMarker(() -> {
                     drive.raiseSlider(1250);
                 })
@@ -358,8 +363,8 @@ public class RedLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                     drive.boxIn();
                 })
-                .strafeLeft(18.5)
-                .forward(4.5)
+//                .strafeLeft(18.5)
+//                .forward(4.5)
                 .build();
         TrajectorySequence leftNotDropped = drive.trajectorySequenceBuilder(left.end())
                 .forward(5)
@@ -372,10 +377,10 @@ public class RedLeftAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                     drive.boxIn();
                 })
-                .strafeLeft(18.5)
-                .forward(5.75)
+//                .strafeLeft(18.5)
+//                .forward(5.75)
                 .build();
-        drive.raiseIntake(0.74);
+        drive.raiseIntake(0.537);
         waitForStart();
         String position = redPropSearchThreshold.getPropPosition();
         telemetry.addData("Prop Position", position);
